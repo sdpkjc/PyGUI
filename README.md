@@ -1,86 +1,75 @@
 # PyGUI
 
-跨平台 GUI 自动化库 - 极简、完备、高效
+[![PyPI](https://img.shields.io/pypi/v/pygui.svg)](https://pypi.org/project/pygui/)
+[![Tests](https://github.com/sdpkjc/PyGUI/workflows/Tests/badge.svg)](https://github.com/sdpkjc/PyGUI/actions)
+[![Code Quality](https://github.com/sdpkjc/PyGUI/workflows/Code%20Quality/badge.svg)](https://github.com/sdpkjc/PyGUI/actions)
+[![codecov](https://codecov.io/gh/sdpkjc/PyGUI/branch/main/graph/badge.svg)](https://codecov.io/gh/sdpkjc/PyGUI)
+[![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-## 特性
+A minimalist cross-platform GUI automation library for Python.
 
-1. **跨平台支持** - macOS / Linux / Windows
-2. **完备的 GUI 操作** - 鼠标、键盘、窗口、显示器、剪贴板
-3. **多显示器支持** - 完整的多屏和高 DPI 处理
-4. **强大的窗口管理** - 枚举、激活、移动、调整大小等
-5. **优雅的宏系统** - 轻松定义复杂的自动化操作
-6. **极简设计** - 无图像匹配、OCR 等多余功能
+## Features
 
-## 安装
+- **Cross-platform** - macOS, Linux (X11/Wayland), Windows
+- **Complete GUI control** - Mouse, keyboard, window, display, clipboard
+- **Multi-monitor support** - Full multi-display and high-DPI handling
+- **Powerful macro system** - Easy automation with action-based macros
+- **Clean design** - No image matching or OCR bloat
 
-### 使用 uv (推荐)
+## Installation
 
 ```bash
+# Using uv (recommended)
+uv pip install pygui
+
 # macOS
-uv sync --extra macos
+uv pip install "pygui[macos]"
 
 # Linux
-uv sync --extra linux
+uv pip install "pygui[linux]"
 
-# Windows
-uv sync
-
-# 安装开发依赖
-uv sync --extra dev --extra macos
-```
-
-### 使用 pip
-
-```bash
+# Using pip
 pip install pygui
-
-# macOS
-pip install pygui[macos]
-
-# Linux
-pip install pygui[linux]
+pip install "pygui[macos]"  # macOS
+pip install "pygui[linux]"  # Linux
 ```
 
-## 快速开始
-
-### 基础操作
+## Quick Start
 
 ```python
 from pygui import mouse, keyboard, display, window, clipboard
 
-# 鼠标操作
+# Mouse operations
 mouse.move(500, 300)
 mouse.click()
 mouse.drag(700, 400, duration=0.5)
-mouse.scroll_down(3)
 
-# 键盘操作
-keyboard.write("Hello, PyGUI!")
+# Keyboard operations
+keyboard.type("Hello, PyGUI!")
 keyboard.hotkey("cmd", "s")  # macOS
 keyboard.hotkey("ctrl", "s")  # Windows/Linux
 
-# 剪贴板
-clipboard.set_text("复制内容")
-text = clipboard.get_text()
+# Clipboard
+clipboard.set("Copy this text")
+text = clipboard.get()
 
-# 显示器信息
-for d in display.all():
-    print(f"{d.name}: {d.bounds.width}x{d.bounds.height} @{d.scale}x")
+# Display information
+for d in display.list():
+    print(f"{d.name}: {d.bounds.width}x{d.bounds.height}")
 
-# 窗口管理
-chrome_windows = window.find(title="Chrome")
-if chrome_windows:
-    window.focus(chrome_windows[0])
-    window.maximize(chrome_windows[0])
+# Window management
+windows = window.find(title="Chrome")
+if windows:
+    window.focus(windows[0])
 ```
 
-### 宏操作
+## Macro System
 
 ```python
-from pygui import Macro
-from pygui.core.macro import MouseMove, MouseClick, KeyWrite, KeyHotkey
+from pygui.core.macro import Macro, MouseMove, MouseClick, KeyWrite
 
-login = (
+macro = (
     Macro("auto_login")
     .add(MouseMove(300, 200, 0.2))
     .add(MouseClick())
@@ -89,124 +78,83 @@ login = (
     .add(MouseMove(300, 250, 0.2))
     .add(MouseClick())
     .add(KeyWrite("password"))
-    .add(KeyHotkey(("enter",)))
 )
 
-login.run()
+macro.run()
 ```
 
-### 多显示器
+## API Overview
 
-```python
-from pygui import mouse, display
+| Module | Key Functions |
+|--------|--------------|
+| **mouse** | `position()`, `move()`, `click()`, `drag()`, `scroll()` |
+| **keyboard** | `press()`, `release()`, `type()`, `hotkey()` |
+| **display** | `list()`, `primary()`, `at()`, `virtual_screen_rect()` |
+| **window** | `list()`, `active()`, `find()`, `focus()`, `move()`, `resize()` |
+| **clipboard** | `get()`, `set()`, `clear()`, `has_text()` |
 
-displays = display.all()
-if len(displays) > 1:
-    second = displays[1]
-    center = second.bounds.center
-    mouse.smooth_move(center.x, center.y, duration=0.5)
-```
-
-## API 文档
-
-### 鼠标 (mouse)
-
-- `position()` - 获取鼠标位置
-- `move(x, y, duration=0)` - 移动鼠标
-- `click(button='left', clicks=1)` - 点击
-- `double_click()` - 双击
-- `drag(x, y, button='left', duration=0)` - 拖拽
-- `scroll(dx=0, dy=0)` - 滚动
-- `smooth_move(x, y, duration=0.5)` - 平滑移动
-
-### 键盘 (keyboard)
-
-- `press(key)` - 按下按键
-- `release(key)` - 释放按键
-- `tap(key, times=1)` - 点击按键
-- `write(text, interval=0)` - 输入文本
-- `hotkey(*keys)` - 组合键
-- `get_layout()` - 获取键盘布局
-
-### 显示器 (display)
-
-- `all()` - 获取所有显示器
-- `primary()` - 获取主显示器
-- `at_point(x, y)` - 获取坐标所在显示器
-- `virtual_rect()` - 获取虚拟屏幕矩形
-- `to_physical(point)` - 逻辑坐标转物理坐标
-- `from_physical(point)` - 物理坐标转逻辑坐标
-
-### 窗口 (window)
-
-- `list(visible_only=True)` - 列出所有窗口
-- `active()` - 获取当前激活窗口
-- `find(title=None, class_name=None, pid=None)` - 查找窗口
-- `focus(window)` - 激活窗口
-- `move(window, x, y)` - 移动窗口
-- `resize(window, width, height)` - 调整大小
-- `minimize/maximize/restore(window)` - 窗口状态
-- `close(window)` - 关闭窗口
-
-### 剪贴板 (clipboard)
-
-- `get_text()` - 获取文本
-- `set_text(text)` - 设置文本
-- `clear()` - 清空
-- `has_text()` - 检查是否有文本
-
-## 开发
+## Testing
 
 ```bash
-# 克隆仓库
-git clone https://github.com/yourusername/pygui.git
-cd pygui
+# Run unit tests
+uv run pytest tests/unit/ -v
 
-# 安装依赖（使用 uv）
+# Run with coverage
+uv run pytest tests/unit/ --cov=pygui --cov-report=html
+
+# Run integration tests (requires GUI environment)
+uv run pytest tests/integration/ -v -m integration
+```
+
+See [TESTING.md](TESTING.md) for detailed testing documentation.
+
+## Development
+
+```bash
+git clone https://github.com/sdpkjc/PyGUI.git
+cd PyGUI
 uv sync --extra dev --extra macos
 
-# 运行测试
-uv run pytest
-
-# 运行示例
-uv run python examples/basic_operations.py
-uv run python examples/multi_monitor.py
-uv run python examples/macro_example.py
-
-# 代码检查和格式化
+# Code quality
 uv run ruff check pygui
-uv run ruff format pygui
-
-# 类型检查
 uv run mypy pygui
 
-# 运行所有检查（pre-commit）
+# Pre-commit hooks
 uv run pre-commit run --all-files
 ```
 
-## 平台说明
+For detailed development guide, see:
+- [DESIGN.md](DESIGN.md) - Architecture and design decisions
+- [CLAUDE.md](CLAUDE.md) - Development setup and common tasks
+- [TODO.md](TODO.md) - Development roadmap and pending tasks
+- [TESTING.md](TESTING.md) - Testing guide and infrastructure
+- [RELEASING.md](RELEASING.md) - Release process and PyPI publishing
 
-### macOS
+## Platform Notes
 
-- 需要辅助功能权限
-- 窗口管理功能有限（由于系统限制）
-- 完整支持鼠标、键盘、显示器操作
+| Platform | Status | Notes |
+|----------|--------|-------|
+| **macOS** | ✅ Full support | Requires accessibility permissions |
+| **Linux (X11)** | 🚧 Planned | Requires `python-xlib` |
+| **Linux (Wayland)** | ⚠️ Limited | Security restrictions apply |
+| **Windows** | 🚧 Planned | No extra dependencies (uses ctypes) |
 
-### Linux
+## License
 
-- 优先支持 X11
-- Wayland 支持有限（安全限制）
-- 需要安装 `python-xlib`
+MIT License - see [LICENSE](LICENSE) file for details.
 
-### Windows
+## Contributing
 
-- 完整支持所有功能
-- 无额外依赖（使用 ctypes）
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 许可证
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-MIT License
+## Links
 
-## 设计文档
-
-详见 [DESIGN.md](DESIGN.md)
+- **Documentation**: [DESIGN.md](DESIGN.md), [TESTING.md](TESTING.md)
+- **Issues**: https://github.com/sdpkjc/PyGUI/issues
+- **Pull Requests**: https://github.com/sdpkjc/PyGUI/pulls
