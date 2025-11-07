@@ -1,9 +1,9 @@
-# PyGUI
+# GuiGuiGui
 
 [![PyPI](https://img.shields.io/pypi/v/guiguigui.svg)](https://pypi.org/project/guiguigui/)
-[![Tests](https://github.com/sdpkjc/PyGUI/workflows/Tests/badge.svg)](https://github.com/sdpkjc/PyGUI/actions)
-[![Code Quality](https://github.com/sdpkjc/PyGUI/workflows/Code%20Quality/badge.svg)](https://github.com/sdpkjc/PyGUI/actions)
-[![codecov](https://codecov.io/gh/sdpkjc/PyGUI/branch/main/graph/badge.svg)](https://codecov.io/gh/sdpkjc/PyGUI)
+[![Tests](https://github.com/sdpkjc/guiguigui/workflows/Tests/badge.svg)](https://github.com/sdpkjc/guiguigui/actions)
+[![Code Quality](https://github.com/sdpkjc/guiguigui/workflows/Code%20Quality/badge.svg)](https://github.com/sdpkjc/guiguigui/actions)
+[![codecov](https://codecov.io/gh/sdpkjc/guiguigui/branch/main/graph/badge.svg)](https://codecov.io/gh/sdpkjc/guiguigui)
 [![Python](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/downloads/)
 [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
@@ -38,7 +38,7 @@ pip install "guiguigui[linux]"  # Linux
 ## Quick Start
 
 ```python
-from pygui import mouse, keyboard, display, window, clipboard
+from guiguigui import mouse, keyboard, display, window, clipboard
 
 # Mouse operations
 mouse.move(500, 300)
@@ -46,7 +46,7 @@ mouse.click()
 mouse.drag(700, 400, duration=0.5)
 
 # Keyboard operations
-keyboard.type("Hello, PyGUI!")
+keyboard.type("Hello, GuiGuiGui!")
 keyboard.hotkey("cmd", "s")  # macOS
 keyboard.hotkey("ctrl", "s")  # Windows/Linux
 
@@ -67,7 +67,7 @@ if windows:
 ## Macro System
 
 ```python
-from pygui.core.macro import Macro, MouseMove, MouseClick, KeyWrite
+from guiguigui.core.macro import Macro, MouseMove, MouseClick, KeyWrite
 
 macro = (
     Macro("auto_login")
@@ -100,7 +100,7 @@ macro.run()
 uv run pytest tests/unit/ -v
 
 # Run with coverage
-uv run pytest tests/unit/ --cov=pygui --cov-report=html
+uv run pytest tests/unit/ --cov=guiguigui --cov-report=html
 
 # Run integration tests (requires GUI environment)
 uv run pytest tests/integration/ -v -m integration
@@ -111,13 +111,13 @@ See [TESTING.md](TESTING.md) for detailed testing documentation.
 ## Development
 
 ```bash
-git clone https://github.com/sdpkjc/PyGUI.git
-cd PyGUI
+git clone https://github.com/sdpkjc/guiguigui.git
+cd guiguigui
 uv sync --extra dev --extra macos
 
 # Code quality
-uv run ruff check pygui
-uv run mypy pygui
+uv run ruff check guiguigui
+uv run mypy guiguigui
 
 # Pre-commit hooks
 uv run pre-commit run --all-files
@@ -156,5 +156,5 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 ## Links
 
 - **Documentation**: [DESIGN.md](DESIGN.md), [TESTING.md](TESTING.md)
-- **Issues**: https://github.com/sdpkjc/PyGUI/issues
-- **Pull Requests**: https://github.com/sdpkjc/PyGUI/pulls
+- **Issues**: https://github.com/sdpkjc/guiguigui/issues
+- **Pull Requests**: https://github.com/sdpkjc/guiguigui/pulls

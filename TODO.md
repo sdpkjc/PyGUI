@@ -1,6 +1,6 @@
-# PyGUI Development TODO List
+# GuiGuiGui Development TODO List
 
-这是 PyGUI 项目的开发计划，按优先级和类别组织。
+这是 GuiGuiGui 项目的开发计划，按优先级和类别组织。
 
 ## ⚠️ 当前状态
 

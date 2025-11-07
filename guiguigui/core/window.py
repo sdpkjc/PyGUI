@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import re
 from collections.abc import Callable
 
 from ..backend import get_backend
@@ -21,26 +22,47 @@ class Window:
         title: str | None = None,
         class_name: str | None = None,
         pid: int | None = None,
+        process_name: str | None = None,
+        regex: bool = False,
         predicate: Callable[[WindowInfo], bool] | None = None,
-    ) -> list[WindowInfo]:
+    ) -> WindowInfo | None:
+        """Find a window matching the given criteria.
+
+        Returns the first matching window or None if not found.
+        """
         windows = self.list(visible_only=True)
-        results: list[WindowInfo] = []
 
         for win in windows:
-            if title and title.lower() not in win.title.lower():
-                continue
+            if title:
+                if regex:
+                    if not re.search(title, win.title):
+                        continue
+                elif title.lower() not in win.title.lower():
+                    continue
+
             if class_name and class_name.lower() not in win.class_name.lower():
                 continue
+
             if pid is not None and win.pid != pid:
                 continue
+
+            if process_name and process_name.lower() != win.process_name.lower():
+                continue
+
             if predicate and not predicate(win):
                 continue
-            results.append(win)
 
-        return results
+            return win
+
+        return None
 
     def at_point(self, x: int, y: int) -> WindowInfo | None:
         return self._backend.get_window_at(x, y)
+
+    # Alias for at_point
+    def at(self, x: int, y: int) -> WindowInfo | None:
+        """Alias for at_point()"""
+        return self.at_point(x, y)
 
     def focus(self, window: WindowInfo | int) -> None:
         handle = window.handle if isinstance(window, WindowInfo) else window
@@ -105,6 +127,11 @@ class Window:
     def get_state(self, window: WindowInfo | int) -> WindowState:
         handle = window.handle if isinstance(window, WindowInfo) else window
         return self._backend.get_window_state(handle)
+
+    def set_state(self, window: WindowInfo | int, state: WindowState) -> None:
+        """Set window state (normal, minimized, maximized, fullscreen)"""
+        handle = window.handle if isinstance(window, WindowInfo) else window
+        self._backend.set_window_state(handle, state)
 
     def set_opacity(self, window: WindowInfo | int, opacity: float) -> None:
         handle = window.handle if isinstance(window, WindowInfo) else window

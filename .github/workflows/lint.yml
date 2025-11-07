@@ -37,4 +37,4 @@ jobs:
 
     - name: Run mypy
       run: |
-        uv run mypy pygui
+        uv run mypy guiguigui

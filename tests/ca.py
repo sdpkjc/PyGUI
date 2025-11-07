@@ -4,8 +4,8 @@ from typing import Any
 
 import pytest
 
-from pygui.backend.base import Backend
-from pygui.core.types import (
+from guiguigui.backend.base import Backend
+from guiguigui.core.types import (
     DisplayInfo,
     Key,
     MouseButton,
@@ -194,7 +194,7 @@ class MockBackend(Backend):
 @pytest.fixture
 def mock_backend(monkeypatch: pytest.MonkeyPatch) -> MockBackend:
     backend = MockBackend()
-    monkeypatch.setattr("pygui.backend.get_backend", lambda: backend)
+    monkeypatch.setattr("guiguigui.backend.get_backend", lambda: backend)
     return backend
 
 

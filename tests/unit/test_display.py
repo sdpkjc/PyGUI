@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pygui.core.display import Display
-from pygui.core.types import Rect
+from guiguigui.core.display import Display
+from guiguigui.core.types import Rect
 from tests.conftest import MockBackend
 
 

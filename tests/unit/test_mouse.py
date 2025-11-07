@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import time
 
-from pygui.core.mouse import Mouse
-from pygui.core.types import MouseButton, Point
+from guiguigui.core.mouse import Mouse
+from guiguigui.core.types import MouseButton, Point
 from tests.conftest import MockBackend
 
 

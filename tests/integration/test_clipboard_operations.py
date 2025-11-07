@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from pygui import clipboard
+from guiguigui import clipboard
 
 
 @pytest.mark.integration

@@ -4,8 +4,8 @@ import time
 
 import pytest
 
-from pygui import display, mouse
-from pygui.core.types import MouseButton, Point
+from guiguigui import display, mouse
+from guiguigui.core.types import MouseButton, Point
 
 
 @pytest.mark.integration

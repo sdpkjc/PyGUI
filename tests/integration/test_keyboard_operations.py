@@ -4,8 +4,8 @@ import time
 
 import pytest
 
-from pygui import keyboard
-from pygui.core.types import Key
+from guiguigui import keyboard
+from guiguigui.core.types import Key
 
 
 @pytest.mark.integration

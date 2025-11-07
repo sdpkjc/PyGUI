@@ -1,6 +1,6 @@
 # Testing Guide
 
-This document describes the testing infrastructure for the PyGUI project.
+This document describes the testing infrastructure for the GuiGuiGui project.
 
 ## Test Structure
 
@@ -49,7 +49,7 @@ uv run pytest tests/unit/test_mouse.py -v
 uv run pytest tests/unit/test_mouse.py::TestMouse::test_position -v
 
 # Run with coverage
-uv run pytest tests/unit/ -v --cov=pygui --cov-report=html
+uv run pytest tests/unit/ -v --cov=guiguigui --cov-report=html
 ```
 
 ### Integration Tests
@@ -72,7 +72,7 @@ DISPLAY=:99 uv run pytest tests/integration/ -v -m integration
 uv run pytest -v
 
 # Run with coverage
-uv run pytest -v --cov=pygui --cov-report=html --cov-report=term
+uv run pytest -v --cov=guiguigui --cov-report=html --cov-report=term
 ```
 
 ## CI/CD
@@ -107,7 +107,7 @@ Current coverage (as of 2025-11-08):
 Coverage reports are generated in `htmlcov/` directory:
 
 ```bash
-uv run pytest tests/unit/ --cov=pygui --cov-report=html
+uv run pytest tests/unit/ --cov=guiguigui --cov-report=html
 open htmlcov/index.html
 ```
 
@@ -116,7 +116,7 @@ open htmlcov/index.html
 ### Unit Test Example
 
 ```python
-from pygui.core.mouse import Mouse
+from guiguigui.core.mouse import Mouse
 from tests.conftest import MockBackend
 
 class TestMouse:
@@ -130,7 +130,7 @@ class TestMouse:
 
 ```python
 import pytest
-from pygui import mouse
+from guiguigui import mouse
 
 @pytest.mark.integration
 class TestMouseOperations:

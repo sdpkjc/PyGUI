@@ -1,8 +1,8 @@
-from pygui import clipboard, display, keyboard, mouse, window
+from guiguigui import clipboard, display, keyboard, mouse, window
 
 
 def main():
-    print("PyGUI Basic Operations Example")
+    print("GuiGuiGui Basic Operations Example")
     print("=" * 50)
 
     print("\n1. Mouse Operations")
@@ -13,8 +13,8 @@ def main():
     print("Moved mouse to (500, 300)")
 
     print("\n2. Keyboard Operations")
-    keyboard.write("Hello, PyGUI!")
-    print("Typed: Hello, PyGUI!")
+    keyboard.write("Hello, GuiGuiGui!")
+    print("Typed: Hello, GuiGuiGui!")
 
     print("\n3. Display Information")
     displays = display.all()
@@ -29,7 +29,7 @@ def main():
         print(f"  Active window: {windows[0].title}")
 
     print("\n5. Clipboard Operations")
-    clipboard.set_text("PyGUI test")
+    clipboard.set_text("GuiGuiGui test")
     text = clipboard.get_text()
     print(f"Clipboard text: {text}")
 

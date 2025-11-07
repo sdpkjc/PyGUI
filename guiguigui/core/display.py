@@ -11,6 +11,11 @@ class Display:
     def all(self) -> list[DisplayInfo]:
         return self._backend.get_displays()
 
+    # Alias for consistency with other modules
+    def list(self) -> list[DisplayInfo]:
+        """Alias for all()"""
+        return self.all()
+
     def primary(self) -> DisplayInfo:
         return self._backend.get_primary_display()
 
@@ -24,8 +29,18 @@ class Display:
                 return display
         return None
 
+    # Alias for shorter API
+    def at(self, x: int, y: int) -> DisplayInfo | None:
+        """Alias for at_point()"""
+        return self.at_point(x, y)
+
     def virtual_rect(self) -> Rect:
         return self._backend.get_virtual_screen_rect()
+
+    # Alias for consistency
+    def virtual_screen_rect(self) -> Rect:
+        """Alias for virtual_rect()"""
+        return self.virtual_rect()
 
     def to_physical(self, point: Point, display: DisplayInfo | None = None) -> Point:
         if display is None:

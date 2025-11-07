@@ -1,28 +1,28 @@
-class PyGUIError(Exception):
+class GuiGuiGuiError(Exception):
     pass
 
 
-class BackendNotAvailableError(PyGUIError):
+class BackendNotAvailableError(GuiGuiGuiError):
     pass
 
 
-class PermissionDeniedError(PyGUIError):
+class PermissionDeniedError(GuiGuiGuiError):
     def __init__(self, feature: str, platform_hint: str = ""):
         self.feature = feature
         self.platform_hint = platform_hint
         super().__init__(f"Permission denied for {feature}. {platform_hint}")
 
 
-class BackendCapabilityError(PyGUIError):
+class BackendCapabilityError(GuiGuiGuiError):
     def __init__(self, feature: str, backend: str):
         self.feature = feature
         self.backend = backend
         super().__init__(f"Feature '{feature}' is not supported on {backend} backend")
 
 
-class WindowNotFoundError(PyGUIError):
+class WindowNotFoundError(GuiGuiGuiError):
     pass
 
 
-class DisplayNotFoundError(PyGUIError):
+class DisplayNotFoundError(GuiGuiGuiError):
     pass

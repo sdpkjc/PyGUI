@@ -1,8 +1,8 @@
-# PyGUI 技术设计文档
+# GuiGuiGui 技术设计文档
 
 ## 0. 项目定位与目标
 
-**PyGUI** 是一个极简的跨平台 GUI 自动化控制库，专注于提供完备的底层 GUI 操作接口。
+**GuiGuiGui** 是一个极简的跨平台 GUI 自动化控制库，专注于提供完备的底层 GUI 操作接口。
 
 ### 核心原则
 
@@ -25,8 +25,8 @@
 ### 1.1 目录结构
 
 ```
-pygui/
-├── pygui/
+guiguigui/
+├── guiguigui/
 │   ├── __init__.py              # 统一API入口
 │   ├── core/
 │   │   ├── __init__.py
@@ -73,7 +73,7 @@ pygui/
 ### 1.2 API 入口设计
 
 ```python
-# pygui/__init__.py
+# guiguigui/__init__.py
 from .core.mouse import mouse
 from .core.keyboard import keyboard
 from .core.window import window
@@ -1404,15 +1404,15 @@ events = Events()
 ## 7. 异常设计（core/errors.py）
 
 ```python
-class PyGUIError(Exception):
-    """PyGUI 基础异常"""
+class GuiGuiGuiError(Exception):
+    """GuiGuiGui 基础异常"""
     pass
 
-class BackendNotAvailableError(PyGUIError):
+class BackendNotAvailableError(GuiGuiGuiError):
     """后端不可用"""
     pass
 
-class PermissionDeniedError(PyGUIError):
+class PermissionDeniedError(GuiGuiGuiError):
     """权限不足"""
     def __init__(self, feature: str, platform_hint: str = ""):
         self.feature = feature
@@ -1421,7 +1421,7 @@ class PermissionDeniedError(PyGUIError):
             f"Permission denied for {feature}. {platform_hint}"
         )
 
-class BackendCapabilityError(PyGUIError):
+class BackendCapabilityError(GuiGuiGuiError):
     """后端不支持某功能"""
     def __init__(self, feature: str, backend: str):
         self.feature = feature
@@ -1430,11 +1430,11 @@ class BackendCapabilityError(PyGUIError):
             f"Feature '{feature}' is not supported on {backend} backend"
         )
 
-class WindowNotFoundError(PyGUIError):
+class WindowNotFoundError(GuiGuiGuiError):
     """窗口未找到"""
     pass
 
-class DisplayNotFoundError(PyGUIError):
+class DisplayNotFoundError(GuiGuiGuiError):
     """显示器未找到"""
     pass
 ```
@@ -1502,7 +1502,7 @@ class DisplayNotFoundError(PyGUIError):
 
 ```toml
 [project]
-name = "pygui"
+name = "guiguigui"
 version = "0.1.0"
 description = "Cross-platform GUI automation library"
 readme = "README.md"
@@ -1549,7 +1549,7 @@ strict = true
 ### 10.1 基础操作
 
 ```python
-from pygui import mouse, keyboard, display, window, clipboard
+from guiguigui import mouse, keyboard, display, window, clipboard
 
 # 鼠标操作
 mouse.move(500, 300)
@@ -1574,7 +1574,7 @@ for d in display.all():
 ### 10.2 窗口管理
 
 ```python
-from pygui import window, display
+from guiguigui import window, display
 
 # 查找窗口
 chrome_wins = window.find(title="Chrome")
@@ -1595,8 +1595,8 @@ if chrome_wins:
 ### 10.3 宏操作
 
 ```python
-from pygui import Macro, mouse, keyboard
-from pygui.core.macro import MouseMove, MouseClick, Wait, KeyWrite, KeyHotkey
+from guiguigui import Macro, mouse, keyboard
+from guiguigui.core.macro import MouseMove, MouseClick, Wait, KeyWrite, KeyHotkey
 
 # 定义登录宏
 login = (
@@ -1621,7 +1621,7 @@ login.repeat(3)
 ### 10.4 多显示器操作
 
 ```python
-from pygui import mouse, display
+from guiguigui import mouse, display
 
 # 在每个显示器中心点击
 for disp in display.all():
@@ -1671,7 +1671,7 @@ for disp in display.all():
 
 ### 12.1 明确"不做的事"
 
-PyGUI 专注于底层 GUI 操作，以下功能**不在**范围内：
+GuiGuiGui 专注于底层 GUI 操作，以下功能**不在**范围内：
 
 - ❌ 图像识别和模板匹配
 - ❌ OCR 文字识别
@@ -1744,7 +1744,7 @@ docs/
 
 ## 总结
 
-PyGUI 是一个精简、专注的跨平台 GUI 自动化库：
+GuiGuiGui 是一个精简、专注的跨平台 GUI 自动化库：
 
 ✅ **完备** - 覆盖鼠标、键盘、窗口、显示器、剪贴板
 ✅ **跨平台** - Windows / macOS / Linux

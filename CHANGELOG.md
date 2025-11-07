@@ -37,5 +37,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - macOS window management has limited functionality
 - Event hooks not yet implemented
 
-[Unreleased]: https://github.com/sdpkjc/PyGUI/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/sdpkjc/PyGUI/releases/tag/v0.1.0
+[Unreleased]: https://github.com/sdpkjc/guiguigui/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/sdpkjc/guiguigui/releases/tag/v0.1.0

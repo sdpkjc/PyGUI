@@ -1,5 +1,5 @@
-from pygui import Macro
-from pygui.core.macro import KeyHotkey, KeyWrite, MouseClick, MouseMove
+from guiguigui import Macro
+from guiguigui.core.macro import KeyHotkey, KeyWrite, MouseClick, MouseMove
 
 
 def simple_macro():
@@ -36,7 +36,7 @@ def copy_paste_macro():
 
 
 if __name__ == "__main__":
-    print("PyGUI Macro Examples")
+    print("GuiGuiGui Macro Examples")
     print("=" * 50)
 
     print("\n1. Simple Login Macro")

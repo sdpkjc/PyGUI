@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pygui.core.types import Rect, WindowInfo, WindowState
-from pygui.core.window import Window
+from guiguigui.core.types import Rect, WindowInfo, WindowState
+from guiguigui.core.window import Window
 from tests.conftest import MockBackend
 
 

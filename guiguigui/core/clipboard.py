@@ -13,6 +13,15 @@ class Clipboard:
     def set_text(self, text: str) -> None:
         self._backend.clipboard_set_text(text)
 
+    # Aliases for shorter API
+    def get(self) -> str:
+        """Alias for get_text()"""
+        return self.get_text()
+
+    def set(self, text: str) -> None:
+        """Alias for set_text()"""
+        self.set_text(text)
+
     def clear(self) -> None:
         self._backend.clipboard_clear()
 

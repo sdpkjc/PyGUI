@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from pygui.core.clipboard import Clipboard
+from guiguigui.core.clipboard import Clipboard
 from tests.conftest import MockBackend
 
 

@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import time
 
-from pygui.core.macro import (
+from guiguigui.core.macro import (
     Action,
     Condition,
     KeyPress,
@@ -14,7 +14,7 @@ from pygui.core.macro import (
     Repeat,
     Wait,
 )
-from pygui.core.types import Key
+from guiguigui.core.types import Key
 
 
 class CustomAction(Action):

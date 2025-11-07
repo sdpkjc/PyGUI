@@ -2,8 +2,8 @@ from __future__ import annotations
 
 import pytest
 
-from pygui import display
-from pygui.core.types import DisplayInfo, Rect
+from guiguigui import display
+from guiguigui.core.types import DisplayInfo, Rect
 
 
 @pytest.mark.integration

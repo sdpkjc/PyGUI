@@ -58,11 +58,11 @@ jobs:
 
     - name: Run type checking
       run: |
-        uv run mypy pygui
+        uv run mypy guiguigui
 
     - name: Run unit tests
       run: |
-        uv run pytest tests/unit/ -v --cov=pygui --cov-report=xml --cov-report=term
+        uv run pytest tests/unit/ -v --cov=guiguigui --cov-report=xml --cov-report=term
 
     - name: Run integration tests (macOS only)
       if: runner.os == 'macOS'

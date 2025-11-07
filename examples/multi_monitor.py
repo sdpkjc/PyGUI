@@ -1,10 +1,10 @@
 import time
 
-from pygui import display, mouse
+from guiguigui import display, mouse
 
 
 def main():
-    print("PyGUI Multi-Monitor Example")
+    print("GuiGuiGui Multi-Monitor Example")
     print("=" * 50)
 
     displays = display.all()

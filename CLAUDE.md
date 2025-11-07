@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-PyGUI is a minimalist cross-platform GUI automation library that provides low-level control over mouse, keyboard, windows, displays, and clipboard. It deliberately excludes image matching, OCR, and other high-level automation features, focusing purely on direct GUI operations.
+GuiGuiGui is a minimalist cross-platform GUI automation library that provides low-level control over mouse, keyboard, windows, displays, and clipboard. It deliberately excludes image matching, OCR, and other high-level automation features, focusing purely on direct GUI operations.
 
 **Key principle**: Only do input control, window management, display management, clipboard, and event hooks. Do NOT add image recognition, OCR, or business logic features.
 
@@ -35,18 +35,18 @@ uv run pytest -v
 uv run pytest tests/test_basic.py
 
 # Run with coverage
-uv run pytest --cov=pygui --cov-report=html
+uv run pytest --cov=guiguigui --cov-report=html
 ```
 
 ### Code Quality
 
 ```bash
 # Lint and format (recommended before commit)
-uv run ruff check pygui
-uv run ruff format pygui
+uv run ruff check guiguigui
+uv run ruff format guiguigui
 
 # Type checking
-uv run mypy pygui
+uv run mypy guiguigui
 
 # Run all pre-commit checks
 uv run pre-commit run --all-files
@@ -70,20 +70,20 @@ uv run python examples/macro_example.py
 
 ### Three-Layer Design
 
-1. **Backend Layer** (`pygui/backend/`): Platform-specific implementations
+1. **Backend Layer** (`guiguigui/backend/`): Platform-specific implementations
    - `base.py`: Abstract `Backend` class defining 30+ methods
    - `macos.py`: Uses PyObjC (Quartz/Cocoa APIs)
    - `x11.py`: Uses python-xlib (not yet implemented)
    - `win32.py`: Uses ctypes/pywin32 (not yet implemented)
    - `wayland.py`: Limited support (not yet implemented)
 
-2. **Core Layer** (`pygui/core/`): Platform-agnostic API
+2. **Core Layer** (`guiguigui/core/`): Platform-agnostic API
    - `mouse.py`, `keyboard.py`, `window.py`, `display.py`, `clipboard.py`: User-facing APIs
    - `types.py`: Shared data structures (Point, Rect, WindowInfo, DisplayInfo, etc.)
    - `macro.py`: Action-based macro system with DSL
    - `errors.py`: Exception hierarchy
 
-3. **Entry Point** (`pygui/__init__.py`): Exports singleton objects
+3. **Entry Point** (`guiguigui/__init__.py`): Exports singleton objects
    - `mouse`, `keyboard`, `window`, `display`, `clipboard`, `events`
 
 ### Backend Loading
@@ -127,7 +127,7 @@ Macros are composed of `Action` objects (MouseMove, MouseClick, KeyPress, Wait, 
 
 - Mode: Moderate (not strict)
 - Tests and examples are excluded from type checking
-- `pygui.core.window` has `valid-type` error disabled due to method name collision
+- `guiguigui.core.window` has `valid-type` error disabled due to method name collision
 
 ## Platform-Specific Notes
 
@@ -166,7 +166,7 @@ Macros are composed of `Action` objects (MouseMove, MouseClick, KeyPress, Wait, 
 
 ### Adding a New Backend
 
-1. Create `pygui/backend/<platform>.py`
+1. Create `guiguigui/backend/<platform>.py`
 2. Subclass `Backend` from `base.py`
 3. Implement all abstract methods
 4. Add platform detection in `backend/__init__.py._load_backend()`

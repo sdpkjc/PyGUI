@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import time
+from collections.abc import Generator
+from contextlib import contextmanager
 
 from ..backend import get_backend
 from .types import Key
@@ -35,6 +37,11 @@ class Keyboard:
                 self._backend.key_type_unicode(char)
                 time.sleep(interval)
 
+    # Alias for write
+    def type(self, text: str, interval: float = 0.0) -> None:
+        """Alias for write()"""
+        self.write(text, interval)
+
     def hotkey(self, *keys: Key | str, interval: float = 0.01) -> None:
         for key in keys:
             self.press(key)
@@ -66,6 +73,20 @@ class Keyboard:
 
     def get_layout(self) -> str:
         return self._backend.get_keyboard_layout()
+
+    # Method alias for get_layout
+    def layout(self) -> str:
+        """Alias for get_layout()"""
+        return self.get_layout()
+
+    @contextmanager
+    def pressed(self, key: Key | str) -> Generator[None, None, None]:
+        """Context manager to press a key and automatically release it"""
+        self.press(key)
+        try:
+            yield
+        finally:
+            self.release(key)
 
 
 keyboard = Keyboard()

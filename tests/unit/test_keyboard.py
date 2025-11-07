@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from pygui.core.keyboard import Keyboard
-from pygui.core.types import Key
+from guiguigui.core.keyboard import Keyboard
+from guiguigui.core.types import Key
 from tests.conftest import MockBackend
 
 

@@ -1,4 +1,4 @@
-from pygui.core.types import Point, Rect, Size
+from guiguigui.core.types import Point, Rect, Size
 
 
 def test_point():

@@ -1,6 +1,6 @@
 # Release Guide
 
-This document describes how to release a new version of PyGUI to PyPI.
+This document describes how to release a new version of GuiGuiGui to PyPI.
 
 ## Prerequisites
 
@@ -12,7 +12,7 @@ The project uses **Trusted Publishing** (recommended by PyPI), which doesn't req
 2. Add a new pending publisher:
    - **PyPI Project Name**: `guiguigui`
    - **Owner**: `sdpkjc`
-   - **Repository name**: `PyGUI`
+   - **Repository name: `guiguigui`
    - **Workflow name**: `publish.yml`
    - **Environment name**: `pypi`
 
@@ -68,7 +68,7 @@ version = "0.1.0"  # Update this
 
 ### Option 2: Test on TestPyPI First
 
-1. Go to GitHub Actions: https://github.com/sdpkjc/PyGUI/actions/workflows/publish.yml
+1. Go to GitHub Actions: https://github.com/sdpkjc/guiguigui/actions/workflows/publish.yml
 
 2. Click "Run workflow"
 
@@ -137,7 +137,7 @@ After release:
 
 - [ ] Verify package on PyPI: https://pypi.org/project/guiguigui/
 - [ ] Test installation: `pip install guiguigui`
-- [ ] Check GitHub Release: https://github.com/sdpkjc/PyGUI/releases
+- [ ] Check GitHub Release: https://github.com/sdpkjc/guiguigui/releases
 - [ ] Update documentation if needed
 - [ ] Announce release (Twitter, Reddit, etc.)
 

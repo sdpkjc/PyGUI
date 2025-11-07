@@ -1,7 +1,8 @@
 from __future__ import annotations
 
 import time
-from collections.abc import Callable
+from collections.abc import Callable, Generator
+from contextlib import contextmanager
 
 from ..backend import get_backend
 from .types import MouseButton, Point
@@ -122,6 +123,15 @@ class Mouse:
                 return 1 - pow(-2 * t + 2, 3) / 2
 
         self.move(x, y, duration, easing=ease_in_out_cubic)
+
+    @contextmanager
+    def pressed(self, button: MouseButton | str = MouseButton.LEFT) -> Generator[None, None, None]:
+        """Context manager to press a mouse button and automatically release it"""
+        self.press(button)
+        try:
+            yield
+        finally:
+            self.release(button)
 
 
 mouse = Mouse()

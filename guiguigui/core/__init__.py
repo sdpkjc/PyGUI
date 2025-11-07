@@ -4,8 +4,8 @@ from .errors import (
     BackendCapabilityError,
     BackendNotAvailableError,
     DisplayNotFoundError,
+    GuiGuiGuiError,
     PermissionDeniedError,
-    PyGUIError,
     WindowNotFoundError,
 )
 from .events import events
@@ -55,7 +55,7 @@ __all__ = [
     "WindowInfo",
     "MouseEvent",
     "KeyboardEvent",
-    "PyGUIError",
+    "GuiGuiGuiError",
     "BackendNotAvailableError",
     "PermissionDeniedError",
     "BackendCapabilityError",
