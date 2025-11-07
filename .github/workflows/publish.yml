@@ -53,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: pypi
-      url: https://pypi.org/p/pygui
+      url: https://pypi.org/p/guigui
     permissions:
       id-token: write
 
@@ -74,7 +74,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: testpypi
-      url: https://test.pypi.org/p/pygui
+      url: https://test.pypi.org/p/guigui
     permissions:
       id-token: write
 
