@@ -32,7 +32,7 @@ class TestMouseOperations:
     def test_mouse_move_relative(self) -> None:
         initial_pos = mouse.position()
 
-        mouse.move_relative(100, 50)
+        mouse.move_rel(100, 50)
         time.sleep(0.1)
 
         new_pos = mouse.position()

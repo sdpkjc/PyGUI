@@ -198,8 +198,18 @@ class MacOSBackend(Backend):
     def mouse_is_pressed(self, button: MouseButton) -> bool:
         import Quartz
 
+        # Map MouseButton to CG button index
+        button_map = {
+            MouseButton.LEFT: kCGMouseButtonLeft,
+            MouseButton.RIGHT: kCGMouseButtonRight,
+            MouseButton.MIDDLE: kCGMouseButtonCenter,
+        }
+        cg_button = button_map.get(button)
+        if cg_button is None:
+            raise ValueError(f"Unsupported button: {button}")
+
         buttons = Quartz.CGEventSourceButtonState(
-            Quartz.kCGEventSourceStateHIDSystemState, button.value
+            Quartz.kCGEventSourceStateHIDSystemState, cg_button
         )
         return bool(buttons)
 
@@ -481,7 +491,8 @@ class MacOSBackend(Backend):
 
     def clipboard_has_text(self) -> bool:
         pasteboard = NSPasteboard.generalPasteboard()
-        return pasteboard.stringForType_(NSStringPboardType) is not None
+        text = pasteboard.stringForType_(NSStringPboardType)
+        return text is not None and len(text) > 0
 
     def check_permissions(self) -> dict[str, bool]:
         perms = {
