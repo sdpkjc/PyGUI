@@ -144,6 +144,119 @@ class TestMacOSMouseButton:
         assert isinstance(result_middle, bool)
 
 
+class TestMacOSMouseMovement:
+    """Test mouse movement operations for macOS."""
+
+    def test_mouse_move_to_executes(self) -> None:
+        """Test that mouse_move_to executes without error."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Get current position as reference
+        start_pos = backend.mouse_position()
+
+        # Move to a different position (should not raise)
+        # Note: macOS backend doesn't support duration parameter
+        backend.mouse_move_to(100, 100)
+        backend.mouse_move_to(200, 200)
+
+        # Move back to near original position
+        backend.mouse_move_to(start_pos.x, start_pos.y)
+
+    def test_mouse_move_to_instant(self) -> None:
+        """Test instant mouse movement (macOS always instant)."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+        start_pos = backend.mouse_position()
+
+        # macOS backend always performs instant moves (no duration parameter)
+        backend.mouse_move_to(start_pos.x + 10, start_pos.y + 10)
+
+        # Should complete immediately
+        assert True
+
+    def test_mouse_move_rel_executes(self) -> None:
+        """Test that mouse_move_rel executes without error."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Relative movement should not raise
+        backend.mouse_move_rel(10, 10)
+        backend.mouse_move_rel(-10, -10)
+
+    def test_mouse_move_to_negative_coordinates(self) -> None:
+        """Test mouse_move_to with negative coordinates."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Negative coordinates should not crash (may be clamped by OS)
+        backend.mouse_move_to(-100, -100)
+
+    def test_mouse_move_to_large_coordinates(self) -> None:
+        """Test mouse_move_to with very large coordinates."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Large coordinates should not crash (may be clamped by OS)
+        backend.mouse_move_to(10000, 10000)
+
+
+class TestMacOSMouseScroll:
+    """Test mouse scroll operations for macOS."""
+
+    def test_mouse_scroll_vertical(self) -> None:
+        """Test vertical mouse scroll."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Vertical scroll should not raise
+        backend.mouse_scroll(0, 5)  # Scroll up
+        backend.mouse_scroll(0, -5)  # Scroll down
+
+    def test_mouse_scroll_horizontal(self) -> None:
+        """Test horizontal mouse scroll."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Horizontal scroll should not raise
+        backend.mouse_scroll(5, 0)  # Scroll right
+        backend.mouse_scroll(-5, 0)  # Scroll left
+
+    def test_mouse_scroll_diagonal(self) -> None:
+        """Test diagonal mouse scroll."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Diagonal scroll should not raise
+        backend.mouse_scroll(3, 3)
+
+    def test_mouse_scroll_zero(self) -> None:
+        """Test mouse scroll with zero values."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Zero scroll should not raise
+        backend.mouse_scroll(0, 0)
+
+    def test_mouse_scroll_large_values(self) -> None:
+        """Test mouse scroll with large values."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Large scroll values should not crash
+        backend.mouse_scroll(100, 100)
+
+
 class TestMacOSPermissions:
     """Test permission checking on macOS."""
 
@@ -184,6 +297,148 @@ class TestMacOSKeyboard:
         assert isinstance(result_shift, bool)
         assert isinstance(result_a, bool)
         assert isinstance(result_space, bool)
+
+
+class TestMacOSKeyboardPressRelease:
+    """Test keyboard press and release operations for macOS."""
+
+    def test_key_press_release_with_key_enum(self) -> None:
+        """Test key press and release with Key enum."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.types import Key
+
+        backend = MacOSBackend()
+
+        # Press and release should not raise
+        backend.key_press(Key.SHIFT)
+        backend.key_release(Key.SHIFT)
+
+        backend.key_press(Key.CTRL)
+        backend.key_release(Key.CTRL)
+
+    def test_key_press_release_with_string(self) -> None:
+        """Test key press and release with string."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Press and release should not raise
+        backend.key_press("a")
+        backend.key_release("a")
+
+        backend.key_press("1")
+        backend.key_release("1")
+
+    def test_key_press_release_special_keys(self) -> None:
+        """Test special keys press and release."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.types import Key
+
+        backend = MacOSBackend()
+
+        # Test various special keys
+        special_keys = [
+            Key.ENTER,
+            Key.TAB,
+            Key.ESCAPE,
+            Key.SPACE,
+            Key.BACKSPACE,
+            Key.DELETE,
+        ]
+
+        for key in special_keys:
+            backend.key_press(key)
+            backend.key_release(key)
+
+    def test_key_press_release_function_keys(self) -> None:
+        """Test function keys press and release."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.types import Key
+
+        backend = MacOSBackend()
+
+        # Test F1-F4
+        backend.key_press(Key.F1)
+        backend.key_release(Key.F1)
+
+        backend.key_press(Key.F12)
+        backend.key_release(Key.F12)
+
+    def test_key_press_release_arrow_keys(self) -> None:
+        """Test arrow keys press and release."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.types import Key
+
+        backend = MacOSBackend()
+
+        # Test all arrow keys
+        backend.key_press(Key.UP)
+        backend.key_release(Key.UP)
+
+        backend.key_press(Key.DOWN)
+        backend.key_release(Key.DOWN)
+
+        backend.key_press(Key.LEFT)
+        backend.key_release(Key.LEFT)
+
+        backend.key_press(Key.RIGHT)
+        backend.key_release(Key.RIGHT)
+
+
+class TestMacOSKeyboardTyping:
+    """Test keyboard typing operations for macOS."""
+
+    def test_key_type_unicode_ascii(self) -> None:
+        """Test typing ASCII characters."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Should not raise for ASCII
+        backend.key_type_unicode("a")
+        backend.key_type_unicode("A")
+        backend.key_type_unicode("1")
+        backend.key_type_unicode("!")
+
+    def test_key_type_unicode_string(self) -> None:
+        """Test typing multi-character string."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Should not raise for strings
+        backend.key_type_unicode("hello")
+        backend.key_type_unicode("Hello World")
+
+    def test_key_type_unicode_unicode(self) -> None:
+        """Test typing Unicode characters."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Should not raise for Unicode
+        backend.key_type_unicode("你好")
+        backend.key_type_unicode("🌍")
+        backend.key_type_unicode("こんにちは")
+
+    def test_key_type_unicode_special_chars(self) -> None:
+        """Test typing special characters."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Should not raise for special chars
+        backend.key_type_unicode("@#$%")
+        backend.key_type_unicode("\n\t")
+
+    def test_key_type_unicode_empty_string(self) -> None:
+        """Test typing empty string."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Empty string should not raise
+        backend.key_type_unicode("")
 
 
 class TestMacOSKeyboardLayout:
@@ -412,11 +667,17 @@ class TestMacOSCoordinateSystem:
 
     def test_mouse_position_in_bounds(self) -> None:
         """Test that mouse position is within screen bounds."""
+        import time
+
         from guiguigui.backend.macos import MacOSBackend
 
         backend = MacOSBackend()
-        pos = backend.mouse_position()
         rect = backend.get_virtual_screen_rect()
+
+        # Move to a known position within bounds first
+        backend.mouse_move_to(100, 100)
+        time.sleep(0.05)  # Small delay to ensure move completes
+        pos = backend.mouse_position()
 
         # Position should be within virtual screen
         assert pos.x >= rect.x

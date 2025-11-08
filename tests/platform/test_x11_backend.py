@@ -352,3 +352,262 @@ class TestX11CoordinateSystem:
         # Allow some margin for multi-monitor setups
         assert pos.x <= rect.x + rect.width + 1000
         assert pos.y <= rect.y + rect.height + 1000
+
+
+class TestX11MouseMovement:
+    """Test mouse movement operations for X11."""
+
+    def test_mouse_move_to_executes(self) -> None:
+        """Test that mouse_move_to executes without error."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Get starting position to restore later
+        start_pos = backend.mouse_position()
+
+        # Move to various positions
+        backend.mouse_move_to(100, 100)
+        backend.mouse_move_to(200, 200, duration=0.1)
+
+        # Restore original position
+        backend.mouse_move_to(start_pos.x, start_pos.y)
+
+    def test_mouse_move_to_with_zero_duration(self) -> None:
+        """Test instant mouse movement."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Get starting position
+        start_pos = backend.mouse_position()
+
+        # Instant move (duration=0.0)
+        backend.mouse_move_to(start_pos.x + 10, start_pos.y + 10, duration=0.0)
+
+    def test_mouse_move_rel_executes(self) -> None:
+        """Test that mouse_move_rel executes without error."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Relative moves should not raise
+        backend.mouse_move_rel(10, 10)
+        backend.mouse_move_rel(-10, -10)
+
+    def test_mouse_move_to_negative_coordinates(self) -> None:
+        """Test mouse_move_to with negative coordinates."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Negative coordinates should not crash (may be clamped)
+        backend.mouse_move_to(-100, -100)
+
+    def test_mouse_move_to_large_coordinates(self) -> None:
+        """Test mouse_move_to with very large coordinates."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Large coordinates should not crash (may be clamped by OS)
+        backend.mouse_move_to(10000, 10000)
+
+
+class TestX11MouseScroll:
+    """Test mouse scroll operations for X11."""
+
+    def test_mouse_scroll_vertical(self) -> None:
+        """Test vertical mouse scroll."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Vertical scroll should not raise
+        backend.mouse_scroll(0, 5)  # Scroll up
+        backend.mouse_scroll(0, -5)  # Scroll down
+
+    def test_mouse_scroll_horizontal(self) -> None:
+        """Test horizontal mouse scroll."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Horizontal scroll should not raise
+        backend.mouse_scroll(5, 0)  # Scroll right
+        backend.mouse_scroll(-5, 0)  # Scroll left
+
+    def test_mouse_scroll_diagonal(self) -> None:
+        """Test diagonal mouse scroll."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Diagonal scroll should not raise
+        backend.mouse_scroll(3, 3)
+
+    def test_mouse_scroll_zero(self) -> None:
+        """Test mouse scroll with zero values."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Zero scroll should not raise
+        backend.mouse_scroll(0, 0)
+
+    def test_mouse_scroll_large_values(self) -> None:
+        """Test mouse scroll with large values."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Large scroll values should not crash
+        backend.mouse_scroll(100, 100)
+
+
+class TestX11KeyboardPressRelease:
+    """Test keyboard press and release operations for X11."""
+
+    def test_key_press_release_with_key_enum(self) -> None:
+        """Test key press and release with Key enum."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import Key
+
+        backend = X11Backend()
+
+        # Press and release should not raise
+        backend.key_press(Key.SHIFT)
+        backend.key_release(Key.SHIFT)
+
+        backend.key_press(Key.CTRL)
+        backend.key_release(Key.CTRL)
+
+    def test_key_press_release_with_string(self) -> None:
+        """Test key press and release with string."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Press and release should not raise
+        backend.key_press("a")
+        backend.key_release("a")
+
+        backend.key_press("1")
+        backend.key_release("1")
+
+    def test_key_press_release_special_keys(self) -> None:
+        """Test special keys press and release."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import Key
+
+        backend = X11Backend()
+
+        # Test various special keys
+        special_keys = [
+            Key.ENTER,
+            Key.TAB,
+            Key.ESCAPE,
+            Key.SPACE,
+            Key.BACKSPACE,
+            Key.DELETE,
+        ]
+
+        for key in special_keys:
+            backend.key_press(key)
+            backend.key_release(key)
+
+    def test_key_press_release_function_keys(self) -> None:
+        """Test function keys press and release."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import Key
+
+        backend = X11Backend()
+
+        # Test F1 and F12
+        backend.key_press(Key.F1)
+        backend.key_release(Key.F1)
+
+        backend.key_press(Key.F12)
+        backend.key_release(Key.F12)
+
+    def test_key_press_release_arrow_keys(self) -> None:
+        """Test arrow keys press and release."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import Key
+
+        backend = X11Backend()
+
+        # Test all arrow keys
+        backend.key_press(Key.UP)
+        backend.key_release(Key.UP)
+
+        backend.key_press(Key.DOWN)
+        backend.key_release(Key.DOWN)
+
+        backend.key_press(Key.LEFT)
+        backend.key_release(Key.LEFT)
+
+        backend.key_press(Key.RIGHT)
+        backend.key_release(Key.RIGHT)
+
+
+class TestX11KeyboardTyping:
+    """Test keyboard typing operations for X11."""
+
+    def test_key_type_unicode_ascii(self) -> None:
+        """Test typing ASCII characters."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Should not raise for ASCII
+        backend.key_type_unicode("a")
+        backend.key_type_unicode("A")
+        backend.key_type_unicode("1")
+        backend.key_type_unicode("!")
+
+    def test_key_type_unicode_string(self) -> None:
+        """Test typing multi-character string."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Should not raise for strings
+        backend.key_type_unicode("hello")
+        backend.key_type_unicode("Hello World")
+
+    def test_key_type_unicode_unicode(self) -> None:
+        """Test typing Unicode characters."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Note: Will raise NotImplementedError, but test that it doesn't crash the backend
+        try:
+            backend.key_type_unicode("你好")
+        except NotImplementedError:
+            pass  # Expected for X11
+
+        try:
+            backend.key_type_unicode("🌍")
+        except NotImplementedError:
+            pass  # Expected for X11
+
+    def test_key_type_unicode_special_chars(self) -> None:
+        """Test typing special characters."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Should not raise for special chars
+        backend.key_type_unicode("@#$%")
+        backend.key_type_unicode("\n\t")
+
+    def test_key_type_unicode_empty_string(self) -> None:
+        """Test typing empty string."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Empty string should not raise
+        backend.key_type_unicode("")
