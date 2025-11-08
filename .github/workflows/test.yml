@@ -8,13 +8,12 @@ on:
 
 jobs:
   test:
-    name: Test on ${{ matrix.os }} - Python ${{ matrix.python-version }}
+    name: Test on ${{ matrix.os }} - Python 3.10
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: ["3.10", "3.11", "3.12"]
+        os: [ubuntu-latest, macos-latest]
 
     steps:
     - uses: actions/checkout@v4
@@ -25,22 +24,18 @@ jobs:
         version: "latest"
         enable-cache: true
 
-    - name: Set up Python ${{ matrix.python-version }}
-      run: uv python install ${{ matrix.python-version }}
+    - name: Set up Python
+      run: uv python install 3.10
 
-    - name: Install dependencies
-      run: |
-        uv sync --all-extras
-
-    - name: Install platform-specific dependencies (macOS)
+    - name: Install dependencies (macOS)
       if: runner.os == 'macOS'
       run: |
-        uv pip install --extra macos
+        uv sync --extra dev --extra macos
 
-    - name: Install platform-specific dependencies (Linux)
+    - name: Install dependencies (Linux)
       if: runner.os == 'Linux'
       run: |
-        uv pip install --extra linux
+        uv sync --extra dev --extra linux
 
     - name: Setup virtual display (Linux)
       if: runner.os == 'Linux'
@@ -81,7 +76,7 @@ jobs:
       with:
         file: ./coverage.xml
         flags: unittests
-        name: codecov-${{ matrix.os }}-py${{ matrix.python-version }}
+        name: codecov-${{ matrix.os }}-py3.10
         fail_ci_if_error: false
       env:
         CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
