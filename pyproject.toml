@@ -126,6 +126,31 @@ ignore_errors = true
 module = "guiguigui.core.window"
 disable_error_code = ["valid-type"]
 
+[[tool.mypy.overrides]]
+module = [
+    "Quartz",
+    "Quartz.*",
+    "Cocoa",
+    "Cocoa.*",
+    "Carbon",
+    "Carbon.*",
+    "ApplicationServices",
+    "ApplicationServices.*",
+]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "guiguigui.backend.macos"
+disable_error_code = ["import-not-found"]
+
+[[tool.mypy.overrides]]
+module = [
+    "guiguigui.backend.win32",
+    "guiguigui.backend.x11",
+    "guiguigui.backend.wayland",
+]
+ignore_errors = true
+
 [tool.pytest.ini_options]
 markers = [
     "integration: marks tests as integration tests (require actual GUI operations)",

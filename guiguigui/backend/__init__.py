@@ -25,7 +25,7 @@ def _load_backend() -> Backend:
     elif platform == "win32":
         from .win32 import Win32Backend
 
-        return Win32Backend()
+        return Win32Backend()  # type: ignore[abstract]
 
     elif platform.startswith("linux"):
         import os
@@ -37,13 +37,13 @@ def _load_backend() -> Backend:
             try:
                 from .wayland import WaylandBackend
 
-                return WaylandBackend()
+                return WaylandBackend()  # type: ignore[abstract]
             except ImportError:
                 pass
 
         from .x11 import X11Backend
 
-        return X11Backend()
+        return X11Backend()  # type: ignore[abstract]
 
     else:
         raise NotImplementedError(f"Platform {platform} is not supported")
