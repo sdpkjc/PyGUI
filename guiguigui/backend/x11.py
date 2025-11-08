@@ -558,32 +558,140 @@ class X11Backend(Backend):
     # Clipboard methods
     def clipboard_get_text(self) -> str:
         """Get clipboard text."""
-        # X11 clipboard is complex, use simple selection for now
         atom_clipboard = self._display.intern_atom("CLIPBOARD")
+        atom_utf8 = self._display.intern_atom("UTF8_STRING")
+        atom_string = self._display.intern_atom("STRING")
+        atom_property = self._display.intern_atom("XSEL_DATA")
 
         # Get current clipboard owner
         owner = self._display.get_selection_owner(atom_clipboard)
         if owner == X.NONE:
             return ""
 
-        # Request clipboard content
-        # This is simplified - full implementation needs event handling
+        # Request clipboard content to be stored in our root window's property
+        self._root.convert_selection(
+            atom_clipboard,  # selection
+            atom_utf8,  # target (prefer UTF8)
+            atom_property,  # property to store result
+            X.CurrentTime,
+        )
+        self._display.sync()
+
+        # Wait for SelectionNotify event (with timeout)
+        start_time = time.time()
+        timeout = 1.0  # 1 second timeout
+
+        while time.time() - start_time < timeout:
+            # Check for pending events
+            if self._display.pending_events() > 0:
+                event_obj = self._display.next_event()
+                if event_obj.type == X.SelectionNotify:
+                    # Check if conversion succeeded
+                    if event_obj.property == X.NONE:
+                        # Conversion failed, try STRING as fallback
+                        self._root.convert_selection(
+                            atom_clipboard, atom_string, atom_property, X.CurrentTime
+                        )
+                        self._display.sync()
+                        continue
+
+                    # Read the property
+                    try:
+                        prop = self._root.get_full_property(atom_property, X.AnyPropertyType)
+                        if prop and prop.value:
+                            # Delete the property after reading
+                            self._root.delete_property(atom_property)
+                            self._display.sync()
+
+                            # Decode the value
+                            if isinstance(prop.value, bytes):
+                                return prop.value.decode("utf-8", errors="ignore")
+                            return str(prop.value)
+                    except Exception:
+                        pass
+
+                    return ""
+            time.sleep(0.01)
+
         return ""
 
     def clipboard_set_text(self, text: str) -> None:
         """Set clipboard text."""
-        # X11 clipboard setting requires owning the selection
-        # This is complex and requires event loop
-        # For now, raise not implemented
-        raise NotImplementedError("Clipboard set not yet implemented for X11")
+        atom_clipboard = self._display.intern_atom("CLIPBOARD")
+
+        # Create a window to own the selection if we don't have one
+        if not hasattr(self, "_clipboard_window"):
+            self._clipboard_window = self._root.create_window(0, 0, 1, 1, 0, X.CopyFromParent)
+
+        # Store the text for later retrieval
+        self._clipboard_text = text.encode("utf-8")
+
+        # Take ownership of the CLIPBOARD selection
+        self._clipboard_window.set_selection_owner(atom_clipboard, X.CurrentTime)
+        self._display.sync()
+
+        # Verify we got the ownership
+        owner = self._display.get_selection_owner(atom_clipboard)
+        if owner != self._clipboard_window.id:
+            raise RuntimeError("Failed to acquire clipboard ownership")
+
+        # Process any immediate selection requests
+        # Note: In a full implementation, we'd need to continuously handle SelectionRequest events
+        # For now, we'll just handle a few immediate requests
+        for _ in range(10):  # Check for up to 10 events
+            if self._display.pending_events() > 0:
+                event_obj = self._display.next_event()
+                if event_obj.type == X.SelectionRequest:
+                    self._handle_selection_request(event_obj)
+            else:
+                break
+            time.sleep(0.01)
+
+    def _handle_selection_request(self, event_obj: Any) -> None:
+        """Handle X11 SelectionRequest event."""
+        atom_utf8 = self._display.intern_atom("UTF8_STRING")
+        atom_string = self._display.intern_atom("STRING")
+        atom_targets = self._display.intern_atom("TARGETS")
+
+        # Create SelectionNotify response
+        selection_notify = event.SelectionNotify(
+            time=event_obj.time,
+            requestor=event_obj.requestor,
+            selection=event_obj.selection,
+            target=event_obj.target,
+            property=event_obj.property,
+        )
+
+        # Handle TARGETS request
+        if event_obj.target == atom_targets:
+            # Respond with list of supported targets
+            targets = [atom_utf8, atom_string, atom_targets]
+            event_obj.requestor.change_property(
+                event_obj.property,
+                X.ATOM,
+                32,
+                targets,
+            )
+        # Handle UTF8_STRING or STRING request
+        elif event_obj.target in (atom_utf8, atom_string):
+            # Send the clipboard text
+            event_obj.requestor.change_property(
+                event_obj.property,
+                event_obj.target,
+                8,  # 8-bit format
+                self._clipboard_text,
+            )
+        else:
+            # Unsupported target
+            selection_notify.property = X.NONE
+
+        # Send SelectionNotify event back to requestor
+        event_obj.requestor.send_event(selection_notify)
+        self._display.sync()
 
     def clipboard_clear(self) -> None:
         """Clear clipboard."""
-        # Clear by setting empty text
-        try:
-            self.clipboard_set_text("")
-        except NotImplementedError:
-            pass
+        self.clipboard_set_text("")
 
     def clipboard_has_text(self) -> bool:
         """Check if clipboard has text."""

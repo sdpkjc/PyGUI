@@ -268,7 +268,6 @@ class TestX11WindowIntegration:
 class TestX11ClipboardIntegration:
     """Integration tests for clipboard operations on X11."""
 
-    @pytest.mark.skip(reason="X11 clipboard operations not yet fully implemented")
     def test_clipboard_set_get(self) -> None:
         """Test setting and getting clipboard."""
         from guiguigui import clipboard
