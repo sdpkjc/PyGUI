@@ -179,3 +179,13 @@ exclude_lines = [
     "if TYPE_CHECKING:",
     "@abstractmethod",
 ]
+
+[tool.bandit]
+# 安全检查配置
+exclude_dirs = ["tests", "examples", ".venv", "build", "dist"]
+skips = [
+    "B101",  # assert_used - tests需要使用assert
+    "B110",  # try_except_pass - 在系统级编程中合理（如遍历X11窗口树）
+    "B601",  # paramiko_calls - 不适用
+    "B602",  # subprocess_popen_with_shell_equals_true - 有时需要
+]
