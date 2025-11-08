@@ -66,6 +66,8 @@ class TestX11BackendImport:
         assert hasattr(backend, "set_window_state")
         assert hasattr(backend, "get_window_state")
         assert hasattr(backend, "close_window")
+        assert hasattr(backend, "set_window_opacity")
+        assert hasattr(backend, "set_window_always_on_top")
 
         # Clipboard methods
         assert hasattr(backend, "clipboard_get_text")
@@ -125,6 +127,22 @@ class TestX11MouseButton:
         backend.mouse_press(MouseButton.LEFT)
         backend.mouse_release(MouseButton.LEFT)
 
+    def test_mouse_is_pressed_returns_bool(self) -> None:
+        """Test that mouse_is_pressed returns a boolean."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import MouseButton
+
+        backend = X11Backend()
+
+        # Should return a boolean for all button types
+        result_left = backend.mouse_is_pressed(MouseButton.LEFT)
+        result_right = backend.mouse_is_pressed(MouseButton.RIGHT)
+        result_middle = backend.mouse_is_pressed(MouseButton.MIDDLE)
+
+        assert isinstance(result_left, bool)
+        assert isinstance(result_right, bool)
+        assert isinstance(result_middle, bool)
+
 
 class TestX11Permissions:
     """Test permission checking on X11."""
@@ -142,6 +160,26 @@ class TestX11Permissions:
         assert "keyboard" in perms
         assert isinstance(perms["accessibility"], bool)
         assert isinstance(perms["mouse"], bool)
+
+
+class TestX11Keyboard:
+    """Test keyboard operations for X11."""
+
+    def test_key_is_pressed_returns_bool(self) -> None:
+        """Test that key_is_pressed returns a boolean."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import Key
+
+        backend = X11Backend()
+
+        # Should return a boolean for various key types
+        result_shift = backend.key_is_pressed(Key.SHIFT)
+        result_a = backend.key_is_pressed("a")
+        result_space = backend.key_is_pressed(Key.SPACE)
+
+        assert isinstance(result_shift, bool)
+        assert isinstance(result_a, bool)
+        assert isinstance(result_space, bool)
 
 
 class TestX11KeyboardLayout:
@@ -232,6 +270,69 @@ class TestX11Window:
         if active:
             assert hasattr(active, "title")
             assert hasattr(active, "handle")
+
+    def test_window_manipulation_methods(self) -> None:
+        """Test that window manipulation methods work on X11."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import WindowState
+
+        backend = X11Backend()
+        windows = backend.list_windows()
+
+        if not windows:
+            pytest.skip("No windows available for testing")
+
+        handle = windows[0].handle
+
+        # These methods should not raise exceptions on X11
+        # Note: May not have visible effect in Xvfb environment, but should execute
+        backend.set_window_opacity(handle, 0.8)
+        backend.set_window_always_on_top(handle, True)
+        backend.set_window_always_on_top(handle, False)
+
+        # Window state operations
+        try:
+            backend.set_window_state(handle, WindowState.NORMAL)
+            state = backend.get_window_state(handle)
+            assert isinstance(state, WindowState)
+        except Exception:
+            # May fail in Xvfb environment without window manager
+            pytest.skip("Window state operations require window manager")
+
+    def test_window_get_at_position(self) -> None:
+        """Test getting window at position."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Get window at current mouse position
+        pos = backend.mouse_position()
+        window = backend.get_window_at(pos.x, pos.y)
+
+        # Might be None if no window at that position
+        if window:
+            assert hasattr(window, "title")
+            assert hasattr(window, "handle")
+
+
+class TestX11EventHooks:
+    """Test event hook methods."""
+
+    def test_hook_methods_raise_not_implemented(self) -> None:
+        """Test that hook methods raise NotImplementedError."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Hook methods should raise NotImplementedError
+        with pytest.raises(NotImplementedError):
+            backend.hook_mouse(lambda event: True)
+
+        with pytest.raises(NotImplementedError):
+            backend.hook_keyboard(lambda event: True)
+
+        with pytest.raises(NotImplementedError):
+            backend.unhook(None)
 
 
 class TestX11CoordinateSystem:

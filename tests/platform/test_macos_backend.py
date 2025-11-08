@@ -66,6 +66,8 @@ class TestMacOSBackendImport:
         assert hasattr(backend, "set_window_state")
         assert hasattr(backend, "get_window_state")
         assert hasattr(backend, "close_window")
+        assert hasattr(backend, "set_window_opacity")
+        assert hasattr(backend, "set_window_always_on_top")
 
         # Clipboard methods
         assert hasattr(backend, "clipboard_get_text")
@@ -125,6 +127,22 @@ class TestMacOSMouseButton:
         backend.mouse_press(MouseButton.LEFT)
         backend.mouse_release(MouseButton.LEFT)
 
+    def test_mouse_is_pressed_returns_bool(self) -> None:
+        """Test that mouse_is_pressed returns a boolean."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.types import MouseButton
+
+        backend = MacOSBackend()
+
+        # Should return a boolean for all button types
+        result_left = backend.mouse_is_pressed(MouseButton.LEFT)
+        result_right = backend.mouse_is_pressed(MouseButton.RIGHT)
+        result_middle = backend.mouse_is_pressed(MouseButton.MIDDLE)
+
+        assert isinstance(result_left, bool)
+        assert isinstance(result_right, bool)
+        assert isinstance(result_middle, bool)
+
 
 class TestMacOSPermissions:
     """Test permission checking on macOS."""
@@ -146,6 +164,26 @@ class TestMacOSPermissions:
         except AttributeError:
             # AXIsProcessTrusted might not be available in some environments
             pytest.skip("Permission check API not available")
+
+
+class TestMacOSKeyboard:
+    """Test keyboard operations for macOS."""
+
+    def test_key_is_pressed_returns_bool(self) -> None:
+        """Test that key_is_pressed returns a boolean."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.types import Key
+
+        backend = MacOSBackend()
+
+        # Should return a boolean for various key types
+        result_shift = backend.key_is_pressed(Key.SHIFT)
+        result_a = backend.key_is_pressed("a")
+        result_space = backend.key_is_pressed(Key.SPACE)
+
+        assert isinstance(result_shift, bool)
+        assert isinstance(result_a, bool)
+        assert isinstance(result_space, bool)
 
 
 class TestMacOSKeyboardLayout:
@@ -295,6 +333,78 @@ class TestMacOSWindow:
         if active:
             assert hasattr(active, "title")
             assert hasattr(active, "handle")
+
+    def test_window_manipulation_raises_capability_error(self) -> None:
+        """Test that window manipulation methods raise BackendCapabilityError on macOS."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.errors import BackendCapabilityError
+        from guiguigui.core.types import WindowState
+
+        backend = MacOSBackend()
+
+        # Get a window handle (or use a dummy value if no windows)
+        windows = backend.list_windows()
+        if not windows:
+            pytest.skip("No windows available for testing")
+
+        handle = windows[0].handle
+
+        # These methods should raise BackendCapabilityError on macOS
+        with pytest.raises(BackendCapabilityError):
+            backend.move_window(handle, 100, 100)
+
+        with pytest.raises(BackendCapabilityError):
+            backend.resize_window(handle, 800, 600)
+
+        with pytest.raises(BackendCapabilityError):
+            backend.set_window_state(handle, WindowState.MAXIMIZED)
+
+        with pytest.raises(BackendCapabilityError):
+            backend.close_window(handle)
+
+        with pytest.raises(BackendCapabilityError):
+            backend.set_window_opacity(handle, 0.8)
+
+        with pytest.raises(BackendCapabilityError):
+            backend.set_window_always_on_top(handle, True)
+
+    def test_window_get_state(self) -> None:
+        """Test that get_window_state returns a WindowState."""
+        from guiguigui.backend.macos import MacOSBackend
+        from guiguigui.core.types import WindowState
+
+        backend = MacOSBackend()
+        windows = backend.list_windows()
+
+        if not windows:
+            pytest.skip("No windows available for testing")
+
+        handle = windows[0].handle
+
+        # get_window_state should not raise, but always returns NORMAL on macOS
+        state = backend.get_window_state(handle)
+        assert isinstance(state, WindowState)
+        assert state == WindowState.NORMAL
+
+
+class TestMacOSEventHooks:
+    """Test event hook methods."""
+
+    def test_hook_methods_raise_not_implemented(self) -> None:
+        """Test that hook methods raise NotImplementedError."""
+        from guiguigui.backend.macos import MacOSBackend
+
+        backend = MacOSBackend()
+
+        # Hook methods should raise NotImplementedError
+        with pytest.raises(NotImplementedError):
+            backend.hook_mouse(lambda event: True)
+
+        with pytest.raises(NotImplementedError):
+            backend.hook_keyboard(lambda event: True)
+
+        with pytest.raises(NotImplementedError):
+            backend.unhook(None)
 
 
 class TestMacOSCoordinateSystem:
