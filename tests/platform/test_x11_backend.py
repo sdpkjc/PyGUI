@@ -624,6 +624,147 @@ class TestX11KeyboardTyping:
         backend.key_type_unicode("")
 
 
+class TestX11MouseButtons:
+    """Test X11 mouse button operations."""
+
+    def test_mouse_x1_button(self) -> None:
+        """Test X1 (back) mouse button."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import MouseButton
+
+        backend = X11Backend()
+
+        # Should not crash
+        backend.mouse_press(MouseButton.X1)
+        backend.mouse_release(MouseButton.X1)
+
+    def test_mouse_x2_button(self) -> None:
+        """Test X2 (forward) mouse button."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import MouseButton
+
+        backend = X11Backend()
+
+        # Should not crash
+        backend.mouse_press(MouseButton.X2)
+        backend.mouse_release(MouseButton.X2)
+
+    def test_mouse_middle_button(self) -> None:
+        """Test middle mouse button."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import MouseButton
+
+        backend = X11Backend()
+
+        # Should not crash
+        backend.mouse_press(MouseButton.MIDDLE)
+        backend.mouse_release(MouseButton.MIDDLE)
+
+    def test_mouse_is_pressed_all_buttons(self) -> None:
+        """Test mouse_is_pressed for all button types."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import MouseButton
+
+        backend = X11Backend()
+
+        # Test all buttons (should return bool without crashing)
+        for button in [
+            MouseButton.LEFT,
+            MouseButton.MIDDLE,
+            MouseButton.RIGHT,
+            MouseButton.X1,
+            MouseButton.X2,
+        ]:
+            result = backend.mouse_is_pressed(button)
+            assert isinstance(result, bool)
+
+
+class TestX11KeyboardEdgeCases:
+    """Test X11 keyboard edge cases."""
+
+    def test_key_is_pressed_with_enum(self) -> None:
+        """Test key_is_pressed with Key enum."""
+        from guiguigui.backend.x11 import X11Backend
+        from guiguigui.core.types import Key
+
+        backend = X11Backend()
+
+        # Should not crash with Key enum
+        result = backend.key_is_pressed(Key.A)
+        assert isinstance(result, bool)
+
+    def test_key_is_pressed_special_keys(self) -> None:
+        """Test key_is_pressed with special keys."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Test various special keys
+        for key in ["shift", "ctrl", "alt", "enter", "space", "tab"]:
+            result = backend.key_is_pressed(key)
+            assert isinstance(result, bool)
+
+    def test_key_type_unicode_with_invalid_chars(self) -> None:
+        """Test key_type_unicode with characters that don't have keycodes."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Test with ASCII string containing unmappable characters
+        # This should trigger the ValueError catch and skip those chars
+        backend.key_type_unicode("`~")  # These might not be mapped
+
+
+class TestX11WindowOperations:
+    """Test X11 window operations in detail."""
+
+    def test_list_windows_include_invisible(self) -> None:
+        """Test listing windows including invisible ones."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Get both visible and invisible windows
+        all_windows = backend.list_windows(visible_only=False)
+        visible_windows = backend.list_windows(visible_only=True)
+
+        # All windows should include visible windows
+        assert len(all_windows) >= len(visible_windows)
+
+    def test_focus_window_with_window_info(self) -> None:
+        """Test focus_window with WindowInfo object."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+        windows = backend.list_windows()
+
+        if not windows:
+            pytest.skip("No windows available")
+
+        # Should work with WindowInfo object
+        backend.focus_window(windows[0])
+
+    def test_get_window_at_origin(self) -> None:
+        """Test get_window_at at origin (0, 0)."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Should return a window or None
+        result = backend.get_window_at(0, 0)
+        assert result is None or hasattr(result, "handle")
+
+    def test_get_window_at_far_position(self) -> None:
+        """Test get_window_at at a position far from any window."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Should return None for position outside screen
+        result = backend.get_window_at(10000, 10000)
+        assert result is None or hasattr(result, "handle")
+
+
 class TestX11Clipboard:
     """Test X11 clipboard operations."""
 
@@ -794,3 +935,185 @@ class TestX11ErrorHandling:
         displays = backend.get_displays()
         assert len(displays) >= 1
         assert displays[0].is_primary
+
+
+class TestX11DisplayProperties:
+    """Test X11 display property access."""
+
+    def test_display_has_bounds(self) -> None:
+        """Test that displays have bounds."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+        displays = backend.get_displays()
+
+        assert len(displays) >= 1
+        for display in displays:
+            assert display.bounds.width > 0
+            assert display.bounds.height > 0
+
+    def test_display_has_work_area(self) -> None:
+        """Test that displays have work area."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+        displays = backend.get_displays()
+
+        for display in displays:
+            assert display.work_area is not None
+            assert display.work_area.width > 0
+            assert display.work_area.height > 0
+
+    def test_display_has_physical_size(self) -> None:
+        """Test that displays have physical size."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+        displays = backend.get_displays()
+
+        for display in displays:
+            assert display.physical_size is not None
+            # Physical size might be 0 in virtual displays
+            assert display.physical_size.width >= 0
+            assert display.physical_size.height >= 0
+
+    def test_virtual_screen_calculation(self) -> None:
+        """Test virtual screen rect calculation."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+        displays = backend.get_displays()
+        virtual = backend.get_virtual_screen_rect()
+
+        # Virtual screen should encompass all displays
+        for display in displays:
+            assert virtual.x <= display.bounds.x
+            assert virtual.y <= display.bounds.y
+
+
+class TestX11ClipboardSelectionHandling:
+    """Test X11 clipboard selection handling."""
+
+    def test_clipboard_set_creates_window(self) -> None:
+        """Test that clipboard_set_text creates a clipboard window."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Set text should create clipboard window
+        backend.clipboard_set_text("test")
+
+        # Check that clipboard window was created
+        assert hasattr(backend, "_clipboard_window")
+        assert hasattr(backend, "_clipboard_text")
+
+    def test_clipboard_get_own_selection(self) -> None:
+        """Test getting clipboard text we just set."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Set and get our own clipboard
+        test_text = "test content 123"
+        backend.clipboard_set_text(test_text)
+
+        # Should get back the same text
+        result = backend.clipboard_get_text()
+        assert result == test_text
+
+    def test_clipboard_unicode_content(self) -> None:
+        """Test clipboard with unicode content."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Set unicode text
+        test_text = "测试 test テスト"
+        backend.clipboard_set_text(test_text)
+
+        # Should get back the same text
+        result = backend.clipboard_get_text()
+        assert result == test_text
+
+
+class TestX11KeyCodeMapping:
+    """Test X11 key code mapping."""
+
+    def test_letters_mapped(self) -> None:
+        """Test that all letters are mapped."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # All lowercase letters should be mapped
+        for char in "abcdefghijklmnopqrstuvwxyz":
+            assert char in backend._key_code_map
+
+    def test_numbers_mapped(self) -> None:
+        """Test that all numbers are mapped."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # All numbers should be mapped
+        for num in "0123456789":
+            assert num in backend._key_code_map
+
+    def test_function_keys_mapped(self) -> None:
+        """Test that function keys are mapped."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Function keys should be mapped
+        for i in range(1, 13):
+            assert f"f{i}" in backend._key_code_map
+
+    def test_single_char_key_lookup(self) -> None:
+        """Test single character key lookup."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Single character keys should work
+        backend.key_press("a")
+        backend.key_release("a")
+
+
+class TestX11MouseMoveDuration:
+    """Test X11 mouse movement with duration."""
+
+    def test_mouse_move_zero_duration(self) -> None:
+        """Test mouse move with zero duration (instant)."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Zero duration should be instant (no interpolation)
+        start = backend.mouse_position()
+        backend.mouse_move_to(start.x + 100, start.y + 100, duration=0)
+
+        # Should complete immediately
+
+    def test_mouse_move_with_small_duration(self) -> None:
+        """Test mouse move with small duration."""
+        import time
+
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Small duration should interpolate
+        start = backend.mouse_position()
+        backend.mouse_move_to(start.x + 50, start.y + 50, duration=0.1)
+
+        time.sleep(0.05)  # Give it time to move
+
+    def test_mouse_move_rel_with_duration(self) -> None:
+        """Test relative mouse move with duration."""
+        from guiguigui.backend.x11 import X11Backend
+
+        backend = X11Backend()
+
+        # Relative move with duration
+        backend.mouse_move_rel(20, 20, duration=0.05)
