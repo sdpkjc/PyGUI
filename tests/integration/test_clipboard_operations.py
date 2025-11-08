@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import sys
+
 import pytest
 
 from guiguigui import clipboard
 
 
 @pytest.mark.integration
+@pytest.mark.skipif(sys.platform.startswith("linux"), reason="X11 clipboard not yet implemented")
 class TestClipboardOperations:
     def test_set_and_get_text(self) -> None:
         original = clipboard.get()

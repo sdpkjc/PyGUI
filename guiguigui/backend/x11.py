@@ -229,19 +229,20 @@ class X11Backend(Backend):
         return False
 
     def key_type_unicode(self, char: str) -> None:
-        """Type a single Unicode character."""
-        # For ASCII, just press/release the key
-        if len(char) == 1 and ord(char) < 128:
-            try:
-                self.key_press(char)
-                time.sleep(0.01)
-                self.key_release(char)
-                return
-            except ValueError:
-                pass
+        """Type Unicode text (character or string)."""
+        # For ASCII strings, type each character
+        if all(ord(c) < 128 for c in char):
+            for c in char:
+                try:
+                    self.key_press(c)
+                    time.sleep(0.01)
+                    self.key_release(c)
+                except ValueError:
+                    # If key not found, skip it
+                    pass
+            return
 
         # For Unicode, we need to use XIM or similar
-        # For now, raise not implemented for non-ASCII
         raise NotImplementedError("Unicode typing not yet implemented for X11")
 
     def get_keyboard_layout(self) -> str:
@@ -274,6 +275,8 @@ class X11Backend(Backend):
                     bounds = Rect(
                         x=crtc_info.x, y=crtc_info.y, width=crtc_info.width, height=crtc_info.height
                     )
+                    # Get physical size in millimeters from output_info
+                    physical_size = Size(width=output_info.mm_width, height=output_info.mm_height)
                     displays.append(
                         DisplayInfo(
                             id=str(i),
@@ -281,7 +284,7 @@ class X11Backend(Backend):
                             bounds=bounds,
                             work_area=bounds,  # X11 doesn't easily expose work area
                             scale=1.0,  # X11 doesn't directly expose DPI scaling
-                            physical_size=Size(width=0, height=0),  # Not easily available
+                            physical_size=physical_size,
                             refresh_rate=60.0,  # Default refresh rate
                             rotation=0,  # No rotation by default
                             is_primary=(i == 0),  # First output is primary
@@ -291,6 +294,7 @@ class X11Backend(Backend):
             # Fallback to simple screen info
             screen = self._display.screen()
             bounds = Rect(x=0, y=0, width=screen.width_in_pixels, height=screen.height_in_pixels)
+            physical_size = Size(width=screen.width_in_mms, height=screen.height_in_mms)
             displays.append(
                 DisplayInfo(
                     id="0",
@@ -298,7 +302,7 @@ class X11Backend(Backend):
                     bounds=bounds,
                     work_area=bounds,
                     scale=1.0,
-                    physical_size=Size(width=0, height=0),
+                    physical_size=physical_size,
                     refresh_rate=60.0,
                     rotation=0,
                     is_primary=True,
