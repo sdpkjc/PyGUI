@@ -489,10 +489,20 @@ class MacOSBackend(Backend):
             "keyboard": True,
             "window": True,
             "accessibility": self._check_accessibility(),
+            "screen_recording": False,  # Screen recording permission (macOS 10.15+)
         }
         return perms
 
     def _check_accessibility(self) -> bool:
-        import Quartz
+        try:
+            # Try to import from ApplicationServices (older API)
+            from ApplicationServices import AXIsProcessTrusted
 
-        return Quartz.AXIsProcessTrusted()
+            return AXIsProcessTrusted()
+        except (ImportError, AttributeError):
+            # Fallback: try Quartz
+            try:
+                return Quartz.AXIsProcessTrusted()
+            except AttributeError:
+                # API not available, assume we don't have accessibility
+                return False
