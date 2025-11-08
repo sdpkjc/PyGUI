@@ -148,7 +148,9 @@ class TestMacOSMouseMovement:
     """Test mouse movement operations for macOS."""
 
     def test_mouse_move_to_executes(self) -> None:
-        """Test that mouse_move_to executes without error."""
+        """Test that mouse_move_to moves cursor to target position."""
+        import time
+
         from guiguigui.backend.macos import MacOSBackend
 
         backend = MacOSBackend()
@@ -156,54 +158,122 @@ class TestMacOSMouseMovement:
         # Get current position as reference
         start_pos = backend.mouse_position()
 
-        # Move to a different position (should not raise)
+        # Move to specific positions and verify
         # Note: macOS backend doesn't support duration parameter
         backend.mouse_move_to(100, 100)
-        backend.mouse_move_to(200, 200)
+        time.sleep(0.05)  # Small delay for system to process
+        pos1 = backend.mouse_position()
+        assert pos1.x == 100, f"Expected x=100, got {pos1.x}"
+        assert pos1.y == 100, f"Expected y=100, got {pos1.y}"
 
-        # Move back to near original position
+        backend.mouse_move_to(200, 200)
+        time.sleep(0.05)
+        pos2 = backend.mouse_position()
+        assert pos2.x == 200, f"Expected x=200, got {pos2.x}"
+        assert pos2.y == 200, f"Expected y=200, got {pos2.y}"
+
+        # Move back to original position
         backend.mouse_move_to(start_pos.x, start_pos.y)
 
     def test_mouse_move_to_instant(self) -> None:
         """Test instant mouse movement (macOS always instant)."""
+        import time
+
         from guiguigui.backend.macos import MacOSBackend
 
         backend = MacOSBackend()
         start_pos = backend.mouse_position()
 
         # macOS backend always performs instant moves (no duration parameter)
-        backend.mouse_move_to(start_pos.x + 10, start_pos.y + 10)
+        target_x = start_pos.x + 50
+        target_y = start_pos.y + 50
+        backend.mouse_move_to(target_x, target_y)
 
-        # Should complete immediately
-        assert True
+        # Verify position changed to target
+        time.sleep(0.05)
+        new_pos = backend.mouse_position()
+        assert new_pos.x == target_x, f"Expected x={target_x}, got {new_pos.x}"
+        assert new_pos.y == target_y, f"Expected y={target_y}, got {new_pos.y}"
+
+        # Restore original position
+        backend.mouse_move_to(start_pos.x, start_pos.y)
 
     def test_mouse_move_rel_executes(self) -> None:
-        """Test that mouse_move_rel executes without error."""
+        """Test that mouse_move_rel moves cursor relatively."""
+        import time
+
         from guiguigui.backend.macos import MacOSBackend
 
         backend = MacOSBackend()
 
-        # Relative movement should not raise
-        backend.mouse_move_rel(10, 10)
-        backend.mouse_move_rel(-10, -10)
+        # Get starting position
+        start_pos = backend.mouse_position()
+
+        # Move relatively and verify position change
+        backend.mouse_move_rel(30, 40)
+        time.sleep(0.05)
+        pos1 = backend.mouse_position()
+        assert pos1.x == start_pos.x + 30, f"Expected x={start_pos.x + 30}, got {pos1.x}"
+        assert pos1.y == start_pos.y + 40, f"Expected y={start_pos.y + 40}, got {pos1.y}"
+
+        # Move back relatively
+        backend.mouse_move_rel(-30, -40)
+        time.sleep(0.05)
+        pos2 = backend.mouse_position()
+        assert pos2.x == start_pos.x, f"Expected x={start_pos.x}, got {pos2.x}"
+        assert pos2.y == start_pos.y, f"Expected y={start_pos.y}, got {pos2.y}"
 
     def test_mouse_move_to_negative_coordinates(self) -> None:
         """Test mouse_move_to with negative coordinates."""
+        import time
+
         from guiguigui.backend.macos import MacOSBackend
 
         backend = MacOSBackend()
 
-        # Negative coordinates should not crash (may be clamped by OS)
+        # Store original position
+        original = backend.mouse_position()
+
+        # Negative coordinates should not crash
+        # macOS allows negative coordinates (for multi-monitor setups)
         backend.mouse_move_to(-100, -100)
+        time.sleep(0.05)
+
+        # Verify position was set (macOS accepts negative coordinates)
+        pos = backend.mouse_position()
+        assert isinstance(pos.x, int), "Position x should be an integer"
+        assert isinstance(pos.y, int), "Position y should be an integer"
+        assert pos.x == -100, f"Expected x=-100, got {pos.x}"
+        assert pos.y == -100, f"Expected y=-100, got {pos.y}"
+
+        # Restore original position
+        backend.mouse_move_to(original.x, original.y)
 
     def test_mouse_move_to_large_coordinates(self) -> None:
         """Test mouse_move_to with very large coordinates."""
+        import time
+
         from guiguigui.backend.macos import MacOSBackend
 
         backend = MacOSBackend()
 
-        # Large coordinates should not crash (may be clamped by OS)
+        # Store original position
+        original = backend.mouse_position()
+
+        # Large coordinates should not crash
+        # macOS allows large coordinates (for multi-monitor setups)
         backend.mouse_move_to(10000, 10000)
+        time.sleep(0.05)
+
+        # Verify position was set (macOS accepts large coordinates)
+        pos = backend.mouse_position()
+        assert isinstance(pos.x, int), "Position x should be an integer"
+        assert isinstance(pos.y, int), "Position y should be an integer"
+        assert pos.x == 10000, f"Expected x=10000, got {pos.x}"
+        assert pos.y == 10000, f"Expected y=10000, got {pos.y}"
+
+        # Restore original position
+        backend.mouse_move_to(original.x, original.y)
 
 
 class TestMacOSMouseScroll:

@@ -358,7 +358,9 @@ class TestX11MouseMovement:
     """Test mouse movement operations for X11."""
 
     def test_mouse_move_to_executes(self) -> None:
-        """Test that mouse_move_to executes without error."""
+        """Test that mouse_move_to moves cursor to target position."""
+        import time
+
         from guiguigui.backend.x11 import X11Backend
 
         backend = X11Backend()
@@ -366,9 +368,18 @@ class TestX11MouseMovement:
         # Get starting position to restore later
         start_pos = backend.mouse_position()
 
-        # Move to various positions
+        # Move to specific positions and verify (X11 supports duration)
         backend.mouse_move_to(100, 100)
-        backend.mouse_move_to(200, 200, duration=0.1)
+        time.sleep(0.05)
+        pos1 = backend.mouse_position()
+        assert pos1.x == 100, f"Expected x=100, got {pos1.x}"
+        assert pos1.y == 100, f"Expected y=100, got {pos1.y}"
+
+        backend.mouse_move_to(200, 200)
+        time.sleep(0.05)
+        pos2 = backend.mouse_position()
+        assert pos2.x == 200, f"Expected x=200, got {pos2.x}"
+        assert pos2.y == 200, f"Expected y=200, got {pos2.y}"
 
         # Restore original position
         backend.mouse_move_to(start_pos.x, start_pos.y)
